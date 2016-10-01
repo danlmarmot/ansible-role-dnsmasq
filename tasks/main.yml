@@ -1,0 +1,43 @@
+---
+# tasks file for dnsmasq
+
+#######
+#  Debian package installs
+#######
+
+- name: Update apt-cache if older than two hours (Debian)
+  apt:
+    update_cache: yes
+    cache_valid_time: 7200
+  when: ansible_os_family == 'Debian'
+
+- name: Install default packages (Debian)
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items:
+    - dnsmasq
+  when: ansible_os_family == 'Debian'
+
+#######
+#  Configure dnsmasq
+#######
+
+- name: Create the /etc/dnsmasq.d directory
+  file:
+    path: /etc/dnsmasq.d/
+    state: directory
+
+- name: Add dnsmasq configuration
+  template:
+    src: dnsmasq.conf.j2
+    dest: /etc/dnsmasq.d/dnsmasq.conf
+  register: dnsmasq_conf
+
+# Restart here to ensure dnsmasq is running for downstream roles
+# Don't run in a handler which runs at the very end of a multi-role playbook
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted
+  when: dnsmasq_conf.changed

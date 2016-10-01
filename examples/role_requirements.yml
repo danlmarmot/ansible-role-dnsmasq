@@ -1,0 +1,5 @@
+---
+# See https://docs.ansible.com/ansible/galaxy.html#advanced-control-over-role-requirements-files for syntax
+
+# The requirements in this file should be run prior to running this role with a command similar to
+# ansible-galaxy install -r role_requirements.yml -p role_dependencies
